@@ -1,0 +1,8 @@
+body { background: hsl(0, 100%, 100%); color: #0c050e; }
+.topbar { background: #f15e08; color: #000000; }
+.brand { font-size: 1.15rem; font-weight: 700; }
+.panel { background: #f15e08; border: 1px solid #13e60b; border-radius: .75rem; box-shadow: 10px 5px rgba(0, 0, 0, .15); transition: all 0.3s ease; }
+:focus-visible { outline: 3px solid #873a00; outline-offset: 3px; }
+.topbar :focus-visible { outline-color: #ffcb69; }
+.btn { background-color:#161a16; color: white; outline: 1px solid white; }
+.panel:hover { translate: translateY (5px); transform: scale(1.03); }

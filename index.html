@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-stone-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas en AromaExpress</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        warm: {
+                            50: '#FAF6F0',
+                            100: '#F5ECE0',
+                            200: '#E6D3BE',
+                            500: '#C86D3B',
+                            600: '#B25628',
+                            700: '#8C3D18',
+                            800: '#4A2818',
+                            900: '#2D160C'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .custom-shadow { box-shadow: 0 10px 30px -5px rgba(74, 40, 24, 0.15); }
+    </style>
+</head>
+<body class="min-h-full flex flex-col bg-[#FAF6F0] text-stone-800 antialiased">
+
+    <!-- Header original con la nueva paleta de color café artesanal -->
+    <header class="bg-gradient-to-r from-warm-700 via-warm-600 to-warm-700 text-white py-4 px-6 sm:px-12 shadow-md">
+        <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-mug-hot text-amber-300 text-2xl"></i>
+                <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">Reservas en AromaExpress</h1>
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="showTab('new')" id="btn-tab-new" class="bg-warm-900 hover:bg-stone-900 text-white border border-warm-500/40 px-5 py-2 rounded-xl text-sm font-semibold transition-all shadow-sm flex items-center space-x-2">
+                    <i class="fa-solid fa-plus text-amber-300 text-xs"></i>
+                    <span>Nueva reserva</span>
+                </button>
+                <button onclick="showTab('my')" id="btn-tab-my" class="bg-warm-800/60 hover:bg-warm-900 text-white/90 border border-warm-500/30 px-5 py-2 rounded-xl text-sm font-semibold transition-all shadow-sm flex items-center space-x-2">
+                    <i class="fa-solid fa-list-check text-amber-300 text-xs"></i>
+                    <span>Mis reservas</span>
+                    <span id="badge-count" class="bg-amber-400 text-warm-900 font-extrabold text-[11px] px-2 py-0.5 rounded-full ml-1 hidden">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Notificaciones Toast -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col space-y-2"></div>
+
+    <!-- Contenido Principal -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
+
+        <!-- VISTA 1: NUEVA RESERVA (Fiel al Layout Original) -->
+        <div id="view-new-booking" class="space-y-6">
+            
+            <!-- Encabezado de la vista -->
+            <div>
+                <h2 class="text-3xl font-extrabold text-warm-900 tracking-tight">Nueva reserva</h2>
+                <p class="text-stone-600 text-sm mt-1 font-medium">Elige una mesa y la fecha de la reserva. Todos los campos son obligatorios.</p>
+            </div>
+
+            <!-- Bloque de Formulario Principal (Respetando el encuadre naranja/terracota original) -->
+            <div class="bg-gradient-to-br from-warm-600 to-warm-700 text-white p-6 sm:p-8 rounded-2xl custom-shadow border border-warm-500/30 relative">
+                <form id="reservation-form" onsubmit="handleFormSubmit(event)" class="space-y-5">
+                    
+                    <!-- Campo: Mesas -->
+                    <div>
+                        <label class="block text-sm font-bold text-amber-100 uppercase tracking-wider mb-2 flex items-center justify-between" for="table-select">
+                            <span><i class="fa-solid fa-chair mr-2 text-amber-300"></i>Mesas</span>
+                            <span id="table-info-badge" class="text-xs font-normal text-amber-200 hidden bg-warm-800/60 px-2.5 py-0.5 rounded-md"></span>
+                        </label>
+                        <div class="relative">
+                            <select id="table-select" required onchange="updateTableBadge(this.value)" class="w-full bg-white text-stone-900 rounded-xl px-4 py-3.5 text-sm sm:text-base font-semibold focus:outline-none focus:ring-4 focus:ring-amber-300 shadow-inner appearance-none cursor-pointer transition-all">
+                                <option value="" disabled selected>Selecciona una mesa</option>
+                                <option value="M1">Mesa 01 - Ventanal (2 Personas)</option>
+                                <option value="M2">Mesa 02 - Zona Interior (2 Personas)</option>
+                                <option value="M3">Mesa 03 - Central (4 Personas)</option>
+                                <option value="M4">Mesa 04 - Zona Co-Working (4 Personas)</option>
+                                <option value="M5">Mesa 05 - Terraza Jardín (2 Personas)</option>
+                                <option value="M6">Mesa 06 - Sala Familiar / Reuniones (6 Personas)</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-warm-700">
+                                <i class="fa-solid fa-chevron-down text-sm"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campo: Fecha -->
+                    <div>
+                        <label class="block text-sm font-bold text-amber-100 uppercase tracking-wider mb-2" for="booking-date">
+                            <i class="fa-solid fa-calendar-days mr-2 text-amber-300"></i>Fecha
+                        </label>
+                        <div class="relative">
+                            <input type="date" id="booking-date" required onchange="validateFormFields()" class="w-full bg-white text-stone-900 rounded-xl px-4 py-3.5 text-sm sm:text-base font-semibold focus:outline-none focus:ring-4 focus:ring-amber-300 shadow-inner transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Fila 2 Columnas: Hora Inicial y Hora Final -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-bold text-amber-100 uppercase tracking-wider mb-2" for="start-time">
+                                <i class="fa-regular fa-clock mr-2 text-amber-300"></i>Hora inicial
+                            </label>
+                            <input type="time" id="start-time" required onchange="validateFormFields()" class="w-full bg-white text-stone-900 rounded-xl px-4 py-3.5 text-sm sm:text-base font-semibold focus:outline-none focus:ring-4 focus:ring-amber-300 shadow-inner transition-all">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-amber-100 uppercase tracking-wider mb-2" for="end-time">
+                                <i class="fa-regular fa-clock mr-2 text-amber-300"></i>Hora final aproximada.
+                            </label>
+                            <input type="time" id="end-time" required onchange="validateFormFields()" class="w-full bg-white text-stone-900 rounded-xl px-4 py-3.5 text-sm sm:text-base font-semibold focus:outline-none focus:ring-4 focus:ring-amber-300 shadow-inner transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Botón Reservar mesa (Conservando posición e identidad del botón original) -->
+                    <div class="pt-2">
+                        <button type="submit" class="bg-warm-900 hover:bg-black text-white font-bold px-7 py-3.5 rounded-xl shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 border border-warm-800 flex items-center space-x-2">
+                            <i class="fa-solid fa-bookmark text-amber-300"></i>
+                            <span>Reservar mesa</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Bloque Reglas del Horario (Abajo a la izquierda, igual al diseño original) -->
+            <div class="max-w-md bg-warm-600/95 text-white p-6 rounded-2xl shadow-lg border border-warm-500/30 space-y-3">
+                <h3 class="font-bold text-lg text-amber-200 flex items-center space-x-2">
+                    <i class="fa-solid fa-circle-info text-amber-300"></i>
+                    <span>Reglas del horario</span>
+                </h3>
+                <p class="text-xs sm:text-sm text-warm-50 leading-relaxed font-medium">
+                    Si se llega la hora final de la reserva y deben continuar, se habla con recepción para que la reserva continue. La fecha debe ser hoy o posterior. La hora final debe ser posterior a la inicial. Un espacio no admite reservas que se crucen el mismo día.
+                </p>
+            </div>
+
+        </div>
+
+        <!-- VISTA 2: MIS RESERVAS -->
+        <div id="view-my-bookings" class="hidden space-y-6">
+            <div class="flex items-center justify-between border-b border-warm-200 pb-4">
+                <div>
+                    <h2 class="text-3xl font-extrabold text-warm-900">Mis reservas</h2>
+                    <p class="text-stone-600 text-sm mt-1">Gestiona o consulta tus reservaciones confirmadas.</p>
+                </div>
+                <button onclick="showTab('new')" class="bg-warm-600 text-white font-semibold text-xs px-4 py-2 rounded-xl hover:bg-warm-700 transition-all flex items-center space-x-1.5 shadow">
+                    <i class="fa-solid fa-plus text-amber-300"></i>
+                    <span>Nueva reserva</span>
+                </button>
+            </div>
+
+            <!-- Estado vacio -->
+            <div id="empty-state" class="bg-white border-2 border-dashed border-warm-200 rounded-2xl p-10 text-center space-y-3 shadow-sm">
+                <div class="w-14 h-14 bg-warm-100 text-warm-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                    <i class="fa-regular fa-calendar-xmark"></i>
+                </div>
+                <h3 class="font-bold text-stone-800 text-lg">No tienes reservas activas</h3>
+                <p class="text-xs text-stone-500 max-w-xs mx-auto">Selecciona una mesa y horario para realizar tu primera reserva en AromaExpress.</p>
+            </div>
+
+            <!-- Grilla de Reservas Guardadas -->
+            <div id="my-bookings-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden"></div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-warm-200 bg-white py-4 text-center text-xs text-stone-500">
+        <p>© 2026 AromaExpress - Sistema de Reservas de Cafetería</p>
+    </footer>
+
+    <!-- Script con lógica interactiva -->
+    <script>
+        // Array de datos de reservas
+        let myBookings = [];
+
+        window.onload = function() {
+            // Establecer fecha mínima = Hoy
+            const dateInput = document.getElementById('booking-date');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.min = today;
+            dateInput.value = today;
+
+            // Valores de hora por defecto
+            const now = new Date();
+            const startStr = formatTime(new Date(now.getTime() + 30*60*1000));
+            const endStr = formatTime(new Date(now.getTime() + 90*60*1000));
+            document.getElementById('start-time').value = startStr;
+            document.getElementById('end-time').value = endStr;
+
+            // Cargar de LocalStorage
+            loadBookings();
+        };
+
+        function formatTime(d) {
+            const h = String(d.getHours()).padStart(2, '0');
+            const m = String(d.getMinutes()).padStart(2, '0');
+            return `${h}:${m}`;
+        }
+
+        function updateTableBadge(val) {
+            const badge = document.getElementById('table-info-badge');
+            if (val) {
+                const select = document.getElementById('table-select');
+                const text = select.options[select.selectedIndex].text;
+                badge.textContent = text;
+                badge.classList.remove('hidden');
+            }
+        }
+
+        function validateFormFields() {
+            const dateVal = document.getElementById('booking-date').value;
+            const startVal = document.getElementById('start-time').value;
+            const endVal = document.getElementById('end-time').value;
+
+            const today = new Date().toISOString().split('T')[0];
+
+            if (dateVal < today) {
+                showToast("La fecha debe ser hoy o posterior.", "error");
+                return false;
+            }
+
+            if (startVal && endVal && startVal >= endVal) {
+                showToast("La hora final debe ser posterior a la hora inicial.", "error");
+                return false;
+            }
+            return true;
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            if (!validateFormFields()) return;
+
+            const tableSelect = document.getElementById('table-select');
+            const tableId = tableSelect.value;
+            const tableName = tableSelect.options[tableSelect.selectedIndex].text;
+            const date = document.getElementById('booking-date').value;
+            const startTime = document.getElementById('start-time').value;
+            const endTime = document.getElementById('end-time').value;
+
+            // Verificar traslapes el mismo dia
+            const overlap = myBookings.find(b => 
+                b.tableId === tableId && 
+                b.date === date && 
+                ((startTime >= b.startTime && startTime < b.endTime) || 
+                 (endTime > b.startTime && endTime <= b.endTime))
+            );
+
+            if (overlap) {
+                showToast("Esta mesa ya tiene una reserva que se cruza en ese horario.", "error");
+                return;
+            }
+
+            const newBooking = {
+                id: 'RES-' + Math.floor(1000 + Math.random() * 9000),
+                tableId,
+                tableName,
+                date,
+                startTime,
+                endTime,
+                createdAt: new Date().toLocaleDateString('es-ES')
+            };
+
+            myBookings.unshift(newBooking);
+            saveBookings();
+            showToast("¡Reserva creada exitosamente!", "success");
+
+            // Cambiar a pestaña Mis Reservas
+            setTimeout(() => {
+                showTab('my');
+            }, 600);
+        }
+
+        function showTab(tab) {
+            const newTab = document.getElementById('view-new-booking');
+            const myTab = document.getElementById('view-my-bookings');
+            const btnNew = document.getElementById('btn-tab-new');
+            const btnMy = document.getElementById('btn-tab-my');
+
+            if (tab === 'new') {
+                newTab.classList.remove('hidden');
+                myTab.classList.add('hidden');
+                btnNew.className = "bg-warm-900 hover:bg-stone-900 text-white border border-warm-500/40 px-5 py-2 rounded-xl text-sm font-semibold transition-all shadow-sm flex items-center space-x-2";
+                btnMy.className = "bg-warm-800/60 hover:bg-warm-900 text-white/90 border border-warm-500/30 px-5 py-2 rounded-xl text-sm font-semibold transition-all shadow-sm flex items-center space-x-2";
+            } else {
+                newTab.classList.add('hidden');
+                myTab.classList.remove('hidden');
+                btnMy.className = "bg-warm-900 hover:bg-stone-900 text-white border border-warm-500/40 px-5 py-2 rounded-xl text-sm font-semibold transition-all shadow-sm flex items-center space-x-2";
+                btnNew.className = "bg-warm-800/60 hover:bg-warm-900 text-white/90 border border-warm-500/30 px-5 py-2 rounded-xl text-sm font-semibold transition-all shadow-sm flex items-center space-x-2";
+                renderMyBookings();
+            }
+        }
+
+        function saveBookings() {
+            localStorage.setItem('aroma_bookings_v2', JSON.stringify(myBookings));
+            updateBadge();
+        }
+
+        function loadBookings() {
+            const saved = localStorage.getItem('aroma_bookings_v2');
+            if (saved) {
+                try {
+                    myBookings = JSON.parse(saved);
+                    updateBadge();
+                } catch(e) { myBookings = []; }
+            }
+        }
+
+        function updateBadge() {
+            const badge = document.getElementById('badge-count');
+            if (myBookings.length > 0) {
+                badge.textContent = myBookings.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function renderMyBookings() {
+            const list = document.getElementById('my-bookings-list');
+            const empty = document.getElementById('empty-state');
+
+            if (myBookings.length === 0) {
+                list.classList.add('hidden');
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            list.classList.remove('hidden');
+            list.innerHTML = '';
+
+            myBookings.forEach(b => {
+                const card = `
+                    <div class="bg-white border border-warm-200 rounded-2xl p-5 shadow-sm space-y-3 relative flex flex-col justify-between hover:shadow-md transition-all">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between border-b border-stone-100 pb-2">
+                                <span class="font-mono text-xs font-extrabold text-warm-700 bg-warm-50 px-2 py-0.5 rounded border border-warm-200">${b.id}</span>
+                                <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">Confirmada</span>
+                            </div>
+                            <h4 class="font-bold text-stone-900 text-base flex items-center space-x-2">
+                                <i class="fa-solid fa-chair text-warm-600"></i>
+                                <span>${b.tableName}</span>
+                            </h4>
+                            <div class="text-xs text-stone-600 space-y-1">
+                                <p><i class="fa-regular fa-calendar text-warm-600 mr-2"></i><strong>Fecha:</strong> ${b.date}</p>
+                                <p><i class="fa-regular fa-clock text-warm-600 mr-2"></i><strong>Horario:</strong> ${b.startTime} - ${b.endTime}</p>
+                            </div>
+                        </div>
+                        <div class="pt-3 border-t border-stone-100 flex items-center justify-between">
+                            <span class="text-[10px] text-stone-400">Creada: ${b.createdAt}</span>
+                            <button onclick="cancelBooking('${b.id}')" class="text-xs text-rose-600 font-bold hover:underline flex items-center space-x-1">
+                                <i class="fa-solid fa-trash-can text-[11px]"></i>
+                                <span>Cancelar</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                list.innerHTML += card;
+            });
+        }
+
+        function cancelBooking(id) {
+            myBookings = myBookings.filter(b => b.id !== id);
+            saveBookings();
+            renderMyBookings();
+            showToast("Reserva cancelada.", "info");
+        }
+
+        function showToast(msg, type = "info") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bg = "bg-warm-900 text-white border-amber-400";
+            if (type === "success") bg = "bg-emerald-800 text-emerald-50 border-emerald-400";
+            if (type === "error") bg = "bg-rose-900 text-rose-50 border-rose-400";
+
+            toast.className = `px-4 py-3 rounded-xl border shadow-xl text-xs font-semibold flex items-center space-x-2 transition-all transform duration-200 ${bg}`;
+            toast.innerHTML = `<span>${msg}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+    </script>
+</body>
+</html>
